@@ -1,23 +1,12 @@
 
-import React from 'react'
-import { Header } from './Header'
-import useUI from './hooks/useUI'
-import { PureCanvas } from './PureCanvas'
-import { isFalsy } from './shared/Utilities'
+import React from 'react';
+import { Header } from './components/Header';
+import { PureCanvas } from './components/PureCanvas';
+import useUI from './hooks/useUI';
+import { UiKVMProps } from './interfaces/UiKVMProps';
+import { isFalsy } from './shared/Utilities';
 
-// import './UI.scss'
-
-export interface KVMProps {
-  deviceId: string | null
-  mpsServer: string | null
-  mouseDebounceTime: number
-  canvasHeight: string
-  canvasWidth: string
-  autoConnect?: boolean
-  authToken: string | null
-}
-
-const KVM: React.FC<KVMProps> = ({deviceId, mpsServer, mouseDebounceTime, canvasHeight, canvasWidth, autoConnect, authToken}) => {
+const KVM: React.FC<UiKVMProps> = ({deviceId, mpsServer, mouseDebounceTime, canvasHeight, canvasWidth, autoConnect, authToken}) => {
   const {kvmState,
     ctxRef,
     mouseHelperRef,
@@ -55,4 +44,4 @@ const KVM: React.FC<KVMProps> = ({deviceId, mpsServer, mouseDebounceTime, canvas
   )
 }
 
-export default KVM
+export default KVM;

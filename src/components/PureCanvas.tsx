@@ -6,7 +6,7 @@
 
 import React from 'react'
 // import './PureCanvas.scss'
-import { isFalsy } from './shared/Utilities'
+import { isFalsy } from '../shared/Utilities'
 
 export interface PureCanvasProps {
   contextRef: (ctx: CanvasRenderingContext2D) => void

@@ -1,14 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AMTDesktop, AMTKvmDataRedirector, DataProcessor, ImageHelper, KeyBoardHelper, MouseHelper, Protocol, type Desktop, type IDataProcessor, type IKvmDataCommunicator, type RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
-import { useEffect, useRef, useState } from "react"
-
-export interface KVMProps {
-  deviceId: string | null
-  mpsServer: string | null
-  mouseDebounceTime: number
-  autoConnect?: boolean
-  authToken: string | null
-}
+import { AMTDesktop, AMTKvmDataRedirector, DataProcessor, ImageHelper, KeyBoardHelper, MouseHelper, Protocol, type Desktop, type IDataProcessor, type IKvmDataCommunicator, type RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core';
+import { useEffect, useRef, useState } from "react";
+import { KVMProps } from '../interfaces/KVMProps';
 
 const useUI = ({deviceId, mpsServer, mouseDebounceTime, authToken}: KVMProps) => {
   const [kvmState, setKvmState] = useState(0)
