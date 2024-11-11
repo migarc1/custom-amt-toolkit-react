@@ -1,8 +1,3 @@
-/*********************************************************************
- * Copyright (c) Intel Corporation 2019
- * SPDX-License-Identifier: Apache-2.0
- **********************************************************************/
-
 import React from 'react'
 import { ConnectButton } from './ConnectButton'
 import { DesktopSettings } from './DesktopSettings'
@@ -13,13 +8,13 @@ export interface IHeaderProps {
   deviceId: string | null
   server: string | null
   handleConnectClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-  // rotateScreen: (e: unknown) => void
-  // handleKeyCombination: (event: { target: { value: unknown; }; }) => void
+  rotateScreen: (e: unknown) => void
+  handleKeyCombination: (event: { target: { value: unknown; }; }) => void
   changeDesktopSettings: (settings: { encoding: string | number; }) => void
   getConnectState: () => number
 }
 
-export const Header = ({kvmState, handleConnectClick, /*rotateScreen, *//*handleKeyCombination, */changeDesktopSettings, getConnectState} : IHeaderProps) => {
+export const Header = ({kvmState, handleConnectClick, rotateScreen, handleKeyCombination, changeDesktopSettings, getConnectState} : IHeaderProps) => {
   return (
     <React.Fragment>
       <div className="header">
@@ -37,14 +32,14 @@ export const Header = ({kvmState, handleConnectClick, /*rotateScreen, *//*handle
         />
 
         {/* <label>SendKeys:</label> */}
-        {/* <select onChange={handleKeyCombination}>
+        {<select onChange={handleKeyCombination}>
         <option value="">Select a key combination</option>
         <option value="1">Ctrl + Alt + Delete</option>
         <option value="2">Alt + Tab</option>
         <option value="3">Alt + F4</option>
         <option value="4">Ctrl + Shift + Esc</option>
-      </select> */}
-        {/* <button className='rotate' onClick={rotateScreen}>↺</button> */}
+      </select>}
+        <button className='rotate' onClick={rotateScreen}>↺</button>
       </div>
     </React.Fragment>
   )

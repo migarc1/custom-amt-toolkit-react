@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { AMTDesktop, AMTKvmDataRedirector, DataProcessor, /*ImageHelper,*/ KeyBoardHelper, MouseHelper, Protocol, type Desktop, type IDataProcessor, type IKvmDataCommunicator, type RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
+import { AMTDesktop, AMTKvmDataRedirector, DataProcessor, ImageHelper, KeyBoardHelper, MouseHelper, Protocol, type Desktop, type IDataProcessor, type IKvmDataCommunicator, type RedirectorConfig } from '@open-amt-cloud-toolkit/ui-toolkit/core'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Header } from './Header'
 import { PureCanvas } from './PureCanvas'
@@ -20,7 +20,7 @@ export interface KVMProps {
 const KVM: React.FC<KVMProps> = (props) => {
   const [kvmState, setKvmState] = useState(0)
   const [encodingOption, setEncodingOption] = useState(1)
-  // const [rotation, setRotation] = useState(0)
+  const [rotation, setRotation] = useState(0)
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const moduleRef = useRef<Desktop | null>(null)
   const dataProcessorRef = useRef<IDataProcessor | null>(null)
@@ -65,14 +65,14 @@ const KVM: React.FC<KVMProps> = (props) => {
     moduleRef.current.bpp = encodingOption
   }, [props.deviceId, props.mpsServer, props.authToken, props.mouseDebounceTime, encodingOption])
 
-  const cleanUp = useCallback(() => {
+  const cleanUp = () => {
     moduleRef.current = null
     redirectorRef.current = null
     dataProcessorRef.current = null
     mouseHelperRef.current = null
     keyboardRef.current = null
     ctxRef.current?.clearRect(0, 0, ctxRef.current.canvas.height, ctxRef.current.canvas.width)
-  }, [])
+  }
 
   const reset = () => {
     cleanUp()
@@ -92,7 +92,7 @@ const KVM: React.FC<KVMProps> = (props) => {
     }
   };
 
-  const changeDesktopSettings = useCallback((settings: { encoding: string | number }) => {
+  const changeDesktopSettings = (settings: { encoding: string | number }) => {
     if(!moduleRef.current) return;
     if(!settings) return;
     if (kvmState === 2) {
@@ -103,7 +103,7 @@ const KVM: React.FC<KVMProps> = (props) => {
       setEncodingOption(parseInt(settings.encoding.toString()))
       moduleRef.current.bpp = parseInt(settings.encoding.toString())
     }
-  }, [kvmState])
+  }
 
   const startKVM = () => {
     if(redirectorRef.current === null) return;
@@ -132,67 +132,71 @@ const KVM: React.FC<KVMProps> = (props) => {
     }
   }
 
-  // const rotateScreen = useCallback(() => {
-  //   setRotation((prevRotation) => {
-  //     if(moduleRef.current === null) return prevRotation;
-  //     const newRotation = (prevRotation + 1) % 4
-  //     ImageHelper.setRotation(moduleRef.current, newRotation)
-  //     return newRotation
-  //   })
-  // }, [])
+  const rotateScreen = () => {
+    setRotation((prevRotation) => (prevRotation + 1) % 4)
+  };
 
-  // const handleKeyCombination = useCallback((event: { target: { value: unknown } }) => {
-    // const value = event.target.value
-    // switch (value) {
-    //   case '1':
-    //     sendCtrlAltDelete()
-    //     break
-    //   case '2':
-    //     sendAltTab()
-    //     break
-    //   case '3':
-    //     sendAltF4()
-    //     break
-    //   case '4':
-    //     sendCtrlShiftEsc()
-    //     break
-    //   default:
-    //     break
-    // }
-  // }, [])
+  useEffect(() => {
+    if (moduleRef.current) {
+      ImageHelper.setRotation(moduleRef.current, rotation)
+    }
+  }, [rotation]);
 
-  // const sendCtrlAltDelete = useCallback(() => {
-  //   if(!keyboardRef.current) return;
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 17, code: 'ControlLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 46, code: 'Delete', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 46, code: 'Delete', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 17, code: 'ControlLeft', shiftKey: false })
-  // }, [])
+  const handleKeyCombination = useCallback((event: { target: { value: unknown } }) => {
+    const value = event.target.value
+    switch (value) {
+      case '1':
+        sendCtrlAltDelete()
+        break
+      case '2':
+        sendAltTab()
+        break
+      case '3':
+        sendAltF4()
+        break
+      case '4':
+        sendCtrlShiftEsc()
+        break
+      default:
+        break
+    }
+  }, [])
 
-  // const sendAltTab = useCallback(() => {
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 9, code: 'Tab', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 9, code: 'Tab', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  // }, [])
+  const sendCtrlAltDelete = () => {
+    if(!keyboardRef.current) return;
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 17, code: 'ControlLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 46, code: 'Delete', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 46, code: 'Delete', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 17, code: 'ControlLeft', shiftKey: false }))
+  }
 
-  // const sendAltF4 = useCallback(() => {
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 115, code: 'F4', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 115, code: 'F4', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 18, code: 'AltLeft', shiftKey: false })
-  // }, [])
+  const sendAltTab = () => {
+    if(!keyboardRef.current) return;
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 9, code: 'Tab', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 9, code: 'Tab', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+  }
 
-  // const sendCtrlShiftEsc = useCallback(() => {
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 17, code: 'ControlLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 16, code: 'ShiftLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(1, { keyCode: 27, code: 'Escape', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 27, code: 'Escape', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 16, code: 'ShiftLeft', shiftKey: false })
-  //   keyboardRef.current.handleKeyEvent(0, { keyCode: 17, code: 'ControlLeft', shiftKey: false })
-  // }, [])
+  const sendAltF4 = () => {
+    if(!keyboardRef.current) return;
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keyup', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 115, code: 'F4', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 115, code: 'F4', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 18, code: 'AltLeft', shiftKey: false }))
+  }
+
+  const sendCtrlShiftEsc = () => {
+    if(!keyboardRef.current) return;
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 17, code: 'ControlLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 16, code: 'ShiftLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(1, new KeyboardEvent('keydown', { keyCode: 27, code: 'Escape', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 27, code: 'Escape', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 16, code: 'ShiftLeft', shiftKey: false }))
+    keyboardRef.current.handleKeyEvent(0, new KeyboardEvent('keyup', { keyCode: 17, code: 'ControlLeft', shiftKey: false }))
+  }
 
   useEffect(() => {
     init()
@@ -213,8 +217,8 @@ const KVM: React.FC<KVMProps> = (props) => {
         <Header
           key="kvm_header"
           handleConnectClick={handleConnectClick}
-          // rotateScreen={rotateScreen}
-          // handleKeyCombination={handleKeyCombination}
+          rotateScreen={rotateScreen}
+          handleKeyCombination={handleKeyCombination}
           getConnectState={() => kvmState}
           kvmState={kvmState}
           changeDesktopSettings={changeDesktopSettings}
